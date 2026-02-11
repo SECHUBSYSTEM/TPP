@@ -37,8 +37,8 @@ export async function POST(request: NextRequest) {
     userId: user.id,
     username: user.username,
     role: user.role,
-    locationIds: user.locationAssignments.map((a) => a.locationId),
-    productLineIds: user.productLineAssignments.map((a) => a.productLineId),
+    locationIds: user.locationAssignments.map((a: { locationId: number }) => a.locationId),
+    productLineIds: user.productLineAssignments.map((a: { productLineId: number }) => a.productLineId),
     customerId: user.customerProfile?.id ?? null,
   };
 

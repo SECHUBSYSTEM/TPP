@@ -109,7 +109,7 @@ export async function POST(request: NextRequest) {
           userId: user.id,
         },
       });
-    } catch (e) {
+    } catch {
       await prisma.user.delete({ where: { id: user.id } });
       return NextResponse.json({ error: "Customer profile could not be created (email may already exist)." }, { status: 400 });
     }

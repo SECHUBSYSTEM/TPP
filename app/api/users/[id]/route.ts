@@ -72,8 +72,8 @@ export async function PATCH(
     name?: string | null;
     passwordHash?: string;
     role?: Role;
-    locationAssignments?: { deleteMany: {}; create: { locationId: number }[] };
-    productLineAssignments?: { deleteMany: {}; create: { productLineId: number }[] };
+    locationAssignments?: { deleteMany: object; create: { locationId: number }[] };
+    productLineAssignments?: { deleteMany: object; create: { productLineId: number }[] };
   } = {};
   if (data.username != null) updateData.username = data.username;
   if (data.name !== undefined) updateData.name = data.name || null;

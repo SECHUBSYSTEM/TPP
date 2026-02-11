@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars -- seed file: many vars exist for side effects only */
 import "dotenv/config";
 import { PrismaClient, Role } from "@prisma/client";
 import { PrismaPg } from "@prisma/adapter-pg";
@@ -38,7 +39,7 @@ async function main() {
     update: {},
     create: { name: "India" },
   });
-  const locations = [nigeria, usa, uk, southAfrica, india];
+  const _locations = [nigeria, usa, uk, southAfrica, india];
 
   // Product lines (5)
   const electronics = await prisma.productLine.upsert({
@@ -66,7 +67,7 @@ async function main() {
     update: {},
     create: { name: "Accessories" },
   });
-  const productLines = { electronics, clothing, home, sports, accessories };
+  const _productLines = { electronics, clothing, home, sports, accessories };
 
   // Products (10 - Mockaroo style)
   const productData = [
@@ -97,12 +98,12 @@ async function main() {
   const products = await prisma.product.findMany();
 
   // 2 Admins
-  const admin1 = await prisma.user.upsert({
+  const _admin1 = await prisma.user.upsert({
     where: { username: "admin1" },
     update: { name: "Jane Admin" },
     create: { username: "admin1", name: "Jane Admin", passwordHash: hash, role: Role.ADMIN },
   });
-  const admin2 = await prisma.user.upsert({
+  const _admin2 = await prisma.user.upsert({
     where: { username: "admin2" },
     update: { name: "John Admin" },
     create: { username: "admin2", name: "John Admin", passwordHash: hash, role: Role.ADMIN },
@@ -210,7 +211,7 @@ async function main() {
     update: { name: "Chidi Nnamdi", email: "chidi@peoplepractice.com", locationId: nigeria.id },
     create: { name: "Chidi Nnamdi", email: "chidi@peoplepractice.com", locationId: nigeria.id, userId: cust3User.id },
   });
-  const cust4 = await prisma.customer.upsert({
+  const _cust4 = await prisma.customer.upsert({
     where: { userId: cust4User.id },
     update: { name: "Dave Jones", email: "dave@peoplepractice.com", locationId: usa.id },
     create: { name: "Dave Jones", email: "dave@peoplepractice.com", locationId: usa.id, userId: cust4User.id },
