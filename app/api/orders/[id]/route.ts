@@ -25,7 +25,7 @@ export async function GET(
   const orderForCheck = {
     customerId: order.customerId,
     customer: { locationId: order.customer.locationId },
-    items: order.items.map((i) => ({ product: { productLineId: i.product.productLineId } })),
+    items: order.items.map((i: { product: { productLineId: number } }) => ({ product: { productLineId: i.product.productLineId } })),
   };
   if (!canAccessOrder(out.session, orderForCheck)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
@@ -52,7 +52,7 @@ export async function PATCH(
   const orderForCheck = {
     customerId: order.customerId,
     customer: { locationId: order.customer.locationId },
-    items: order.items.map((i) => ({ product: { productLineId: i.product.productLineId } })),
+    items: order.items.map((i: { product: { productLineId: number } }) => ({ product: { productLineId: i.product.productLineId } })),
   };
   if (!canAccessOrder(out.session, orderForCheck)) {
     return NextResponse.json({ error: "Forbidden" }, { status: 403 });
