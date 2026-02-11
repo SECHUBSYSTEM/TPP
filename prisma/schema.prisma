@@ -1,0 +1,131 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Role {
+  ADMIN
+  LOCATION_MANAGER
+  PRODUCT_MANAGER
+  CUSTOMER
+}
+
+model User {
+  id           Int      @id @default(autoincrement())
+  username     String   @unique
+  name         String?  // Display name for easy identification (e.g. managers, admins)
+  passwordHash String
+  role         Role
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Manager / customer relations
+  locationAssignments    LocationManagerAssignment[]
+  productLineAssignments ProductManagerAssignment[]
+
+  // One-to-one link to a Customer profile when this user is a CUSTOMER
+  customerProfile Customer? @relation("CustomerUser")
+
+  // When this user is a manager, they can manage many customers and orders
+  managedCustomers Customer[] @relation("CustomerManager")
+  managedOrders    Order[]    @relation("OrderManager")
+}
+
+model Location {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  customers          Customer[]
+  managerAssignments LocationManagerAssignment[]
+}
+
+model ProductLine {
+  id   Int    @id @default(autoincrement())
+  name String @unique
+
+  products          Product[]
+  managerAssignments ProductManagerAssignment[]
+}
+
+model Product {
+  id           Int      @id @default(autoincrement())
+  name         String
+  category     String
+  price        Decimal  @db.Decimal(10, 2)
+  currency     String   @default("USD")
+  productLineId Int
+
+  productLine ProductLine @relation(fields: [productLineId], references: [id])
+  orderItems  OrderItem[]
+}
+
+model Customer {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+
+  locationId Int
+  location   Location @relation(fields: [locationId], references: [id])
+
+  // Optional link to a User with role CUSTOMER for login
+  userId Int? @unique
+  user   User? @relation("CustomerUser", fields: [userId], references: [id], onDelete: SetNull)
+
+  // Optional manager (Location or Product Manager)
+  managerId Int?
+  manager   User? @relation("CustomerManager", fields: [managerId], references: [id], onDelete: SetNull)
+
+  orders Order[]
+}
+
+model Order {
+  id          Int      @id @default(autoincrement())
+  customerId  Int
+  customer    Customer @relation(fields: [customerId], references: [id])
+  totalAmount Decimal  @db.Decimal(10, 2)
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now())
+
+  // Optional manager responsible for this order
+  managerId Int?
+  manager   User? @relation("OrderManager", fields: [managerId], references: [id], onDelete: SetNull)
+
+  items OrderItem[]
+}
+
+model OrderItem {
+  id        Int     @id @default(autoincrement())
+  orderId   Int
+  productId Int
+  quantity  Int
+  unitPrice Decimal @db.Decimal(10, 2)
+
+  order   Order   @relation(fields: [orderId], references: [id])
+  product Product @relation(fields: [productId], references: [id])
+}
+
+model LocationManagerAssignment {
+  id         Int      @id @default(autoincrement())
+  userId     Int
+  locationId Int
+
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  location Location @relation(fields: [locationId], references: [id])
+
+  @@unique([userId, locationId])
+}
+
+model ProductManagerAssignment {
+  id           Int      @id @default(autoincrement())
+  userId       Int
+  productLineId Int
+
+  user        User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  productLine ProductLine @relation(fields: [productLineId], references: [id])
+
+  @@unique([userId, productLineId])
+}
+
