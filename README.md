@@ -101,7 +101,7 @@ After running `pnpm db:seed`, use these accounts. **Password for every user: `pa
 
 - Log in as **`lm_nigeria`** → you should only see Nigeria customers and their orders.
 - Log in as **`pm_electronics`** → you should only see orders that include Electronics products.
-- Log in as **`customer1`** → shop, add to cart, place order; “My orders” shows only that customer’s orders.
+- Log in as **`customer2`** → shop, add to cart, place order; “My orders” shows only that customer’s orders.
 
 ## Scripts
 
