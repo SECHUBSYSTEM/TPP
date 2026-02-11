@@ -2,6 +2,19 @@
 
 Role-based access control (RBAC) app for e-commerce: **Admin**, **Location Manager**, **Product Manager**, and **Customer**. Built with Next.js 16 (App Router), React 19, Tailwind, TypeScript, Supabase (Postgres), and Prisma 7.
 
+## What we're doing
+
+Admins create and manage all users (no self-signup). Each user has one role and, for managers, assigned locations or product lines. Customer users are linked to a **Customer** profile (name, email, location) so they can place orders. Managers see only customers and orders in their scope. The app uses targeted UI updates (no full page reloads), `$axios` for API calls, and loading spinners for async actions.
+
+## How we meet requirements
+
+- **RBAC:** Four roles with distinct routes and API scoping (admin, location manager, product manager, customer).
+- **No self-signup:** Only admins create users; optional display names; customer users get a linked Customer record with location at creation.
+- **Managers:** At least one location (location manager) or one product line (product manager) required before save; validated in UI and API.
+- **Customers:** Shop, cart (localStorage until checkout), place order (uses session customer + location); “Add to cart” shows a brief “Check your cart” notice.
+- **Data consistency:** Deleting a user who has a linked Customer also removes that Customer (and their orders) from the Customers list. Manager assignments and references are cleaned up on user delete.
+- **UX:** Newly created items (users, products, customers, locations, product lines) appear at the top of lists; responsive layout and touch-friendly controls.
+
 ## Features
 
 - **Admin:** Full access — manage users, managers, customers, orders, locations, product lines, and products. No self-signup; admin creates accounts and assigns roles/scopes.
