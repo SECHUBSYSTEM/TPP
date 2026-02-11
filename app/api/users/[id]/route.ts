@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/api-auth";
 import { hashPassword } from "@/lib/auth";
@@ -24,9 +25,7 @@ export async function GET(
   if ("response" in out) return out.response;
   const id = Number((await params).id);
   if (Number.isNaN(id)) return NextResponse.json({ error: "Invalid id" }, { status: 400 });
-  const user = await prisma.user.findUnique({
-    where: { id },
-    select: {
+  const userSelect = {
       id: true,
       username: true,
       name: true,
@@ -35,7 +34,10 @@ export async function GET(
       locationAssignments: { select: { locationId: true } },
       productLineAssignments: { select: { productLineId: true } },
       customerProfile: { select: { id: true } },
-    },
+    } as Prisma.UserSelect;
+  const user = await prisma.user.findUnique({
+    where: { id },
+    select: userSelect,
   });
   if (!user) return NextResponse.json({ error: "Not found" }, { status: 404 });
   return NextResponse.json(user);
@@ -94,10 +96,11 @@ export async function PATCH(
     };
   }
   try {
+    const updateSelect = { id: true, username: true, name: true, role: true, createdAt: true } as Prisma.UserSelect;
     const user = await prisma.user.update({
       where: { id },
       data: updateData,
-      select: { id: true, username: true, name: true, role: true, createdAt: true },
+      select: updateSelect,
     });
     return NextResponse.json(user);
   } catch {
