@@ -116,7 +116,9 @@ export async function DELETE(
       // If this user has a linked Customer profile, delete that customer (and their orders) so they no longer show in Customers list
       const linkedCustomer = await tx.customer.findUnique({ where: { userId: id }, select: { id: true } });
       if (linkedCustomer) {
-        const orderIds = await tx.order.findMany({ where: { customerId: linkedCustomer.id }, select: { id: true } }).then((rows) => rows.map((r) => r.id));
+        const orderIds = await tx.order
+          .findMany({ where: { customerId: linkedCustomer.id }, select: { id: true } })
+          .then((rows: { id: number }[]) => rows.map((r) => r.id));
         if (orderIds.length > 0) await tx.orderItem.deleteMany({ where: { orderId: { in: orderIds } } });
         await tx.order.deleteMany({ where: { customerId: linkedCustomer.id } });
         await tx.customer.delete({ where: { id: linkedCustomer.id } });

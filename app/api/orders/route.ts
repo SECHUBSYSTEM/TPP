@@ -9,6 +9,9 @@ const createOrderSchema = z.object({
   items: z.array(z.object({ productId: z.number(), quantity: z.number().int().positive() })),
 });
 
+type CreateOrderItemInput = z.infer<typeof createOrderSchema>["items"][number];
+type OrderItemWithPrice = CreateOrderItemInput & { unitPrice: number };
+
 export async function GET(request: NextRequest) {
   const out = await requireAuth(request);
   if ("response" in out) return out.response;
@@ -42,12 +45,13 @@ export async function POST(request: NextRequest) {
   if (customerId == null) return NextResponse.json({ error: "customerId required" }, { status: 400 });
 
   const products = await prisma.product.findMany({
-    where: { id: { in: items.map((i) => i.productId) } },
+    where: { id: { in: items.map((i: CreateOrderItemInput) => i.productId) } },
     select: { id: true, price: true },
   });
-  const productMap = new Map(products.map((p) => [p.id, p]));
+  type ProductIdPrice = (typeof products)[number];
+  const productMap = new Map<number, ProductIdPrice>(products.map((p: ProductIdPrice) => [p.id, p]));
   let totalAmount = 0;
-  const itemData = items.map((i) => {
+  const itemData: OrderItemWithPrice[] = items.map((i: CreateOrderItemInput) => {
     const product = productMap.get(i.productId);
     if (!product) throw new Error(`Product ${i.productId} not found`);
     const unitPrice = Number(product.price);
@@ -61,7 +65,7 @@ export async function POST(request: NextRequest) {
       totalAmount,
       status: "PENDING",
       items: {
-        create: itemData.map((i) => ({ ...i, unitPrice: i.unitPrice })),
+        create: itemData.map((i: OrderItemWithPrice) => ({ ...i, unitPrice: i.unitPrice })),
       },
     },
     include: {
