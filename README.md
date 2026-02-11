@@ -77,10 +77,8 @@ After running `pnpm db:seed`, use these accounts. **Password for every user: `pa
 | **Product Manager**  | `pm_electronics` | `password123` | Tunde Okafor — Electronics |
 | **Product Manager**  | `pm_clothing`   | `password123` | Amara Nwosu — Clothing |
 | **Product Manager**  | `pm_mixed`      | `password123` | Chioma Eze — Electronics & Clothing |
-| **Customer**      | `customer1`    | `password123` | Alice Okonkwo (Nigeria) |
-| **Customer**      | `customer2`    | `password123` | Bob Smith (UK) |
-| **Customer**      | `customer3`    | `password123` | Chidi Nnamdi (Nigeria) |
-| **Customer**      | `customer4`    | `password123` | Dave Jones (US) |
+| **Customer**      | `customer2`    | `password123` | Ibukun |
+| **Customer**      | `customer223`    | `password123` | Marvellous Faithful |
 
 - **Admins** are redirected to `/admin/users` (then can open Users, Customers, Managers, Orders, Locations, Product lines, Products).
 - **Location / Product managers** go to `/manager/orders` (Customers and Orders in scope).
