@@ -3,7 +3,6 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/api-auth";
 import { hashPassword } from "@/lib/auth";
 import { z } from "zod";
-import { Role } from "@prisma/client";
 
 const createUserSchema = z.object({
   username: z.string().min(1),
@@ -80,7 +79,7 @@ export async function POST(request: NextRequest) {
       username,
       name: name ?? null,
       passwordHash,
-      role: role as Role,
+      role,
       locationAssignments:
         role === "LOCATION_MANAGER" && locationIds?.length
           ? { create: locationIds.map((locationId) => ({ locationId })) }

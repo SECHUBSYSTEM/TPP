@@ -3,13 +3,15 @@ import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/api-auth";
 import { hashPassword } from "@/lib/auth";
 import { z } from "zod";
-import { Role } from "@prisma/client";
+
+const roleEnum = z.enum(["ADMIN", "LOCATION_MANAGER", "PRODUCT_MANAGER", "CUSTOMER"]);
+type RoleValue = z.infer<typeof roleEnum>;
 
 const updateSchema = z.object({
   username: z.string().min(1).optional(),
   name: z.string().optional(),
   password: z.string().min(1).optional(),
-  role: z.enum(["ADMIN", "LOCATION_MANAGER", "PRODUCT_MANAGER", "CUSTOMER"]).optional(),
+  role: roleEnum.optional(),
   locationIds: z.array(z.number()).optional(),
   productLineIds: z.array(z.number()).optional(),
 });
@@ -71,14 +73,14 @@ export async function PATCH(
     username?: string;
     name?: string | null;
     passwordHash?: string;
-    role?: Role;
+    role?: RoleValue;
     locationAssignments?: { deleteMany: object; create: { locationId: number }[] };
     productLineAssignments?: { deleteMany: object; create: { productLineId: number }[] };
   } = {};
   if (data.username != null) updateData.username = data.username;
   if (data.name !== undefined) updateData.name = data.name || null;
   if (data.password != null) updateData.passwordHash = await hashPassword(data.password);
-  if (data.role != null) updateData.role = data.role as Role;
+  if (data.role != null) updateData.role = data.role;
   if (data.locationIds != null) {
     updateData.locationAssignments = {
       deleteMany: {},
